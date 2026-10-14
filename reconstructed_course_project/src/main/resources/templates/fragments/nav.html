@@ -1,0 +1,19 @@
+<nav th:fragment="nav" class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <a class="navbar-brand" th:href="@{/advertisements}">Dream Car</a>
+  <div class="navbar-nav">
+    <a class="nav-item nav-link" th:href="@{/advertisements}">All Ads</a>
+    <span th:if="${session.currentUser != null}">
+      <a class="nav-item nav-link d-inline-block" th:href="@{/myAds}">My Ads</a>
+      <a class="nav-item nav-link d-inline-block" th:href="@{/cars}">My Cars</a>
+      <a class="nav-item nav-link d-inline-block" th:href="@{/requests/sent}">My requests</a>
+      <a class="nav-item nav-link d-inline-block" th:href="@{/requests/received}">Incoming requests</a>
+      <a th:if="${session.currentUser.role == 'ADMIN'}" class="nav-item nav-link d-inline-block" th:href="@{/admin/users}">Users</a>
+    </span>
+  </div>
+  <div class="ml-auto">
+    <span th:if="${session.currentUser != null}" class="navbar-text">Logged in as: <strong th:text="${session.currentUser.name}">User</strong></span>
+    <a th:if="${session.currentUser == null}" class="btn btn-outline-primary mr-2" th:href="@{/login}">Log in</a>
+    <a th:if="${session.currentUser == null}" class="btn btn-primary" th:href="@{/register}">Register</a>
+    <a th:if="${session.currentUser != null}" class="btn btn-outline-secondary" th:href="@{/logout}">Log out</a>
+  </div>
+</nav>

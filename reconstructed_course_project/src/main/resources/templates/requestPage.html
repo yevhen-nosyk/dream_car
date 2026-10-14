@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/headers::head(title='New Request')"></head>
+<body>
+<div class="container">
+    <div th:replace="fragments/nav::nav"></div>
+    <h2>Send request</h2>
+    <form th:action="@{/request/new}" th:object="${requestForm}" method="post"><input type="hidden"
+                                                                                      th:field="*{receiverId}"/><input
+            type="hidden" th:field="*{proposedCarId}"/>
+        <div class="form-group"><label>Deposit</label><input class="form-control" type="number" min="0"
+                                                             th:field="*{depositSum}"/></div>
+        <div class="form-group"><label>Payment method</label><input class="form-control" th:field="*{paymentMethod}"
+                                                                    placeholder="e.g. cash"/></div>
+        <button class="btn btn-primary">Send request</button>
+    </form>
+</div>
+</body>
+</html>

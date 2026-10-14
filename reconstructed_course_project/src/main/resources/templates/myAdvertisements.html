@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/headers::head(title='My Ads')"></head>
+
+<body>
+<div class="container">
+
+    <div th:replace="fragments/nav::nav"></div>
+
+    <div class="d-flex justify-content-between
+                align-items-center mb-3">
+        <h2>My Advertisements</h2>
+
+        <a class="btn btn-success"
+           th:href="@{/addAdvertisement}">
+            Add Advertisement
+        </a>
+    </div>
+
+    <div th:if="${advertisements.isEmpty()}"
+         class="alert alert-info">
+        You haven't published any advertisements yet.
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-6 col-lg-4 mb-4"
+             th:each="ad : ${advertisements}">
+
+            <div class="card h-100">
+
+                <div th:if="${ad.carId != null
+                             and coverPhotosByCarId[ad.carId] != null}">
+
+                    <img class="card-img-top"
+                         style="height:210px;object-fit:cover"
+                         th:src="@{/car-photos/{filename}
+                           (filename=${coverPhotosByCarId[ad.carId].storedFilename})}"
+                         alt="Car photo"/>
+                </div>
+
+                <div th:unless="${ad.carId != null
+                                and coverPhotosByCarId[ad.carId] != null}"
+                     class="bg-light d-flex align-items-center
+                            justify-content-center"
+                     style="height:210px">
+
+                    <span class="text-muted">No photo available</span>
+                </div>
+
+                <div class="card-body">
+
+                    <h5 class="card-title"
+                        th:if="${ad.carId != null
+                                and carsById[ad.carId] != null}">
+
+                        <span th:text="${carsById[ad.carId].brand}">
+                            Brand
+                        </span>
+
+                        <span th:text="${carsById[ad.carId].model}">
+                            Model
+                        </span>
+                    </h5>
+
+                    <p th:text="${ad.description}">
+                        Advertisement description
+                    </p>
+
+                    <p class="small text-muted">
+                        <span th:text="${ad.status}">ACTIVE</span>
+                        ·
+                        <span th:text="${#temporals.format(
+                            ad.creationDate, 'dd MMM yyyy')}">
+                            01 Jan 2026
+                        </span>
+                    </p>
+
+                </div>
+
+                <div class="card-footer bg-white">
+                    <form th:action="@{/deleteAdvertisement}"
+                          method="post"
+                          onsubmit="return confirm(
+                              'Delete this advertisement?');">
+
+                        <input type="hidden"
+                               name="id"
+                               th:value="${ad.id}"/>
+
+                        <button type="submit"
+                                class="btn btn-outline-danger btn-block">
+                            Delete advertisement
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/headers::head(title='Advertisements')">
+</head>
+
+<body>
+<div class="container">
+
+    <div th:replace="fragments/nav::nav"></div>
+
+    <div class="d-flex justify-content-between
+                align-items-center mb-3">
+        <h2>Car advertisements</h2>
+
+        <a th:if="${session.currentUser != null}"
+           class="btn btn-success"
+           th:href="@{/addAdvertisement}">
+            Add Advertisement
+        </a>
+    </div>
+
+    <div th:if="${advertisements.isEmpty()}"
+         class="alert alert-info">
+        There are no active advertisements right now.
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-6 col-lg-4 mb-4"
+             th:each="ad : ${advertisements}">
+
+            <div class="card h-100">
+
+                <div th:if="${ad.carId != null
+                             and coverPhotosByCarId[ad.carId] != null}">
+
+                    <img class="card-img-top"
+                         style="height:220px;object-fit:cover"
+                         th:src="@{/car-photos/{filename}
+                           (filename=${coverPhotosByCarId[ad.carId].storedFilename})}"
+                         alt="Car photo"/>
+                </div>
+
+                <div th:unless="${ad.carId != null
+                                and coverPhotosByCarId[ad.carId] != null}"
+                     class="bg-light d-flex align-items-center
+                            justify-content-center"
+                     style="height:220px">
+
+                    <span class="text-muted">No photo available</span>
+                </div>
+
+                <div class="card-body">
+
+                    <h5 class="card-title"
+                        th:if="${ad.carId != null
+                                and carsById[ad.carId] != null}">
+
+                        <span th:text="${carsById[ad.carId].brand}">
+                            Brand
+                        </span>
+
+                        <span th:text="${carsById[ad.carId].model}">
+                            Model
+                        </span>
+                    </h5>
+
+                    <h5 class="card-title"
+                        th:if="${ad.carId == null
+                                or carsById[ad.carId] == null}">
+                        Car exchange offer
+                    </h5>
+
+                    <p th:text="${ad.description}">
+                        Advertisement description
+                    </p>
+
+                    <div th:if="${ad.carId != null
+                                 and carsById[ad.carId] != null}"
+                         class="small text-muted mb-2">
+
+                        <span th:text="${carsById[ad.carId].year}">
+                            2020
+                        </span>
+
+                        <span> · </span>
+
+                        <span th:text="${#numbers.formatInteger(
+                            carsById[ad.carId].mileage, 0, 'COMMA')}">
+                            50,000
+                        </span>
+                        km
+
+                        <span> · </span>
+
+                        <span th:switch="${carsById[ad.carId].vehicleCondition}">
+                            <span th:case="'NEW'">New</span>
+                            <span th:case="'USED'">Used</span>
+                            <span th:case="'DAMAGED'">Damaged</span>
+                            <span th:case="*">Unknown condition</span>
+                        </span>
+                    </div>
+
+                    <p class="small text-muted mb-0">
+                        Posted by
+                        <span th:text="${ownerNamesById[ad.ownerId] != null
+                            ? ownerNamesById[ad.ownerId] : 'Member'}">
+                            Member
+                        </span>
+                    </p>
+
+                    <p class="small text-muted">
+                        <span th:text="${#temporals.format(
+                            ad.creationDate, 'dd MMM yyyy')}">
+                            01 Jan 2026
+                        </span>
+                    </p>
+                </div>
+
+                <div class="card-footer bg-white">
+                    <a th:if="${session.currentUser != null
+                               and session.currentUser.id != ad.ownerId}"
+                       class="btn btn-primary btn-block"
+                       th:href="@{/request/new(receiverId=${ad.ownerId})}">
+                        Propose an exchange
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

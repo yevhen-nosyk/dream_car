@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/headers::head(title='Account blocked')">
+</head>
+
+<body>
+<div class="container mt-5">
+    <div class="alert alert-danger">
+        <h2>Your account is blocked</h2>
+
+        <p>
+            Your account has been suspended by an administrator.
+            You cannot access the application while this restriction
+            is active.
+        </p>
+
+        <p>
+            Your cars and advertisements have been hidden, not deleted.
+        </p>
+
+        <a class="btn btn-outline-dark"
+           th:href="@{/logout}">
+            Log out
+        </a>
+    </div>
+</div>
+</body>
+</html>

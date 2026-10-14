@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/headers::head(title='My Cars')"></head>
+
+<body>
+<div class="container">
+    <div th:replace="fragments/nav::nav"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>My Cars</h2>
+        <a class="btn btn-success" th:href="@{/addCar}">
+            Add Car
+        </a>
+    </div>
+
+    <div th:if="${cars.isEmpty()}" class="alert alert-info">
+        You have not added any cars yet.
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-lg-4 mb-4"
+             th:each="car : ${cars}">
+
+            <div class="card h-100">
+
+                <div th:if="${photosByCarId[car.id] != null
+                             and !photosByCarId[car.id].isEmpty()}">
+
+                    <img class="card-img-top"
+                         style="height:210px;object-fit:cover"
+                         th:src="@{/car-photos/{filename}
+                             (filename=${photosByCarId[car.id][0].storedFilename})}"
+                         alt="Car photo"/>
+                </div>
+
+                <div th:unless="${photosByCarId[car.id] != null
+                                and !photosByCarId[car.id].isEmpty()}"
+                     class="bg-light d-flex align-items-center
+                            justify-content-center"
+                     style="height:210px">
+
+                    <span class="text-muted">No photo uploaded</span>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <span th:text="${car.brand}">Brand</span>
+                        <span th:text="${car.model}">Model</span>
+                    </h5>
+
+                    <p class="mb-1">
+                        Year: <span th:text="${car.year}">2020</span>
+                    </p>
+
+                    <p class="mb-1">
+                        Mileage:
+                        <span th:text="${#numbers.formatInteger(
+                            car.mileage, 0, 'COMMA')}">50,000</span> km
+                    </p>
+
+                    <p class="mb-2">
+                        Condition:
+                        <span th:switch="${car.vehicleCondition}">
+                            <span th:case="'NEW'">New</span>
+                            <span th:case="'USED'">Used</span>
+                            <span th:case="'DAMAGED'">Damaged</span>
+                            <span th:case="*">Unknown</span>
+                        </span>
+                    </p>
+
+                    <small class="text-muted"
+                           th:if="${car.vinCode != null
+                                   and !car.vinCode.isEmpty()}">
+                        VIN: <span th:text="${car.vinCode}"></span>
+                    </small>
+                </div>
+
+                <div class="card-footer bg-white">
+                    <span class="text-muted"
+                          th:text="${photosByCarId[car.id] != null
+                              ? photosByCarId[car.id].size() + ' photo(s)'
+                              : '0 photos'}">0 photos</span>
+
+                    <form th:action="@{/deleteCar}"
+                          method="post"
+                          class="d-inline float-right"
+                          onsubmit="return confirm(
+                              'Delete this car and its photos?');">
+
+                        <input type="hidden"
+                               name="id"
+                               th:value="${car.id}"/>
+
+                        <button class="btn btn-sm btn-outline-danger"
+                                type="submit">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
