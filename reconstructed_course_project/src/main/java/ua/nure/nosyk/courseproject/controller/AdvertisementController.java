@@ -16,9 +16,8 @@ import ua.nure.nosyk.courseproject.service.UserService;
 
 import javax.servlet.http.HttpSession;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.SQLException;
+import java.util.*;
 
 @Controller
 public class AdvertisementController {
@@ -155,6 +154,75 @@ public class AdvertisementController {
         }
 
         return "redirect:/myAds";
+    }
+
+    @GetMapping("/advertisements/{id}")
+    public String advertisementDetails(@PathVariable int id, HttpSession session, Model model) throws SQLException {
+
+        Advertisement advertisement = ads.active().stream().filter(a -> a.getId() == id).findFirst().orElse(null);
+
+        if (advertisement == null) {
+            return "redirect:/advertisements";
+        }
+
+        Car car = cars.find(advertisement.getCarId());
+
+        if (car == null) {
+            return "redirect:/advertisements";
+        }
+
+        User owner = users.find(car.getOwnerId());
+
+        if (owner == null) {
+            return "redirect:/advertisements";
+        }
+
+        model.addAttribute("advertisement", advertisement);
+        model.addAttribute("car", car);
+        model.addAttribute("photos", photos.findByCarId(car.getId()));
+        model.addAttribute("owner", owner);
+        model.addAttribute("currentUser", session.getAttribute("currentUser"));
+
+        return "advertisementDetails";
+    }
+
+    @GetMapping("/users/{id}")
+    public String publicProfile(@PathVariable long id, Model model, HttpSession session) throws Exception {
+
+        User profileUser = users.find(id);
+
+        if (profileUser == null || !"ACTIVE".equalsIgnoreCase(profileUser.getAccountStatus())) {
+            return "redirect:/advertisements";
+        }
+
+        // Only show this user's currently active, publicly visible ads.
+        List<Advertisement> profileAds = new ArrayList<>();
+
+        for (Advertisement ad : ads.active()) {
+            if (Objects.equals(ad.getOwnerId(), profileUser.getId())) {
+                profileAds.add(ad);
+            }
+        }
+
+        hidePrivateProfileFields(profileUser);
+
+        model.addAttribute("profileUser", profileUser);
+        model.addAttribute("advertisements", profileAds);
+        model.addAttribute("currentUser", user(session));
+
+        // Reuse the existing card data preparation.
+        populateDisplayData(profileAds, model);
+
+        return "userProfile";
+    }
+
+
+    private void hidePrivateProfileFields(User profileUser) {
+        profileUser.setPassword(null);
+        profileUser.setEmail(null);
+        profileUser.setPhone(null);
+        profileUser.setPassport(null);
+        profileUser.setAddress(null);
     }
 
     private void populateDisplayData(List<Advertisement> listings, Model model) throws Exception {

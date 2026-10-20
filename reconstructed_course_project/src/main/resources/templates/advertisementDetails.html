@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/headers::head(title='Advertisement Details')">
+</head>
+
+<body>
+<div class="container">
+
+  <div th:replace="fragments/nav::nav"></div>
+
+  <div class="mb-3">
+    <a th:href="@{/advertisements}">&larr; All advertisements</a>
+  </div>
+
+  <div class="row">
+
+    <!-- Vehicle details and photo gallery -->
+    <div class="col-lg-8">
+
+      <h2>
+        <span th:text="${car.brand}">Brand</span>
+        <span th:text="${car.model}">Model</span>
+      </h2>
+
+      <p class="text-muted">
+        Posted
+        <span th:text="${#temporals.format(
+                    advertisement.creationDate, 'dd MMM yyyy')}">
+                    01 Jan 2026
+                </span>
+      </p>
+
+      <h4 class="mt-4">Photos</h4>
+
+      <div th:if="${not #lists.isEmpty(photos)}"
+           class="row">
+
+        <div class="col-6 col-md-4 mb-3"
+             th:each="photo : ${photos}">
+
+          <a th:href="@{/car-photos/{filename}(
+                           filename=${photo.storedFilename})}"
+             target="_blank"
+             rel="noopener">
+
+            <img class="img-fluid rounded border"
+                 style="width:100%;height:180px;object-fit:cover"
+                 th:src="@{/car-photos/{filename}(
+                                 filename=${photo.storedFilename})}"
+                 alt="Car photo"/>
+          </a>
+
+        </div>
+      </div>
+
+      <div th:if="${#lists.isEmpty(photos)}"
+           class="alert alert-light border">
+        No photos have been uploaded for this car.
+      </div>
+
+      <h4 class="mt-4">Vehicle information</h4>
+
+      <table class="table table-bordered">
+        <tbody>
+        <tr>
+          <th scope="row">Make</th>
+          <td th:text="${car.brand}">Brand</td>
+        </tr>
+        <tr>
+          <th scope="row">Model</th>
+          <td th:text="${car.model}">Model</td>
+        </tr>
+        <tr>
+          <th scope="row">Year</th>
+          <td th:text="${car.year}">2020</td>
+        </tr>
+        <tr>
+          <th scope="row">Mileage</th>
+          <td>
+                        <span th:text="${#numbers.formatInteger(
+                            car.mileage, 0, 'COMMA')}">50,000</span>
+            km
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Condition</th>
+          <td th:switch="${car.vehicleCondition}">
+            <span th:case="'NEW'">New</span>
+            <span th:case="'USED'">Used</span>
+            <span th:case="'DAMAGED'">Damaged</span>
+            <span th:case="*">Unknown</span>
+          </td>
+        </tr>
+        <tr th:if="${car.vinCode != null and car.vinCode != ''}">
+          <th scope="row">VIN</th>
+          <td th:text="${car.vinCode}">VIN</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <h4 class="mt-4">Description</h4>
+
+      <div class="card">
+        <div class="card-body"
+             style="white-space:pre-wrap;overflow-wrap:anywhere"
+             th:text="${advertisement.description}">
+          Advertisement description
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Owner and actions -->
+    <div class="col-lg-4 mt-4 mt-lg-0">
+
+      <div class="card">
+        <div class="card-body">
+
+          <h4>Advertisement owner</h4>
+
+          <p class="mb-2">
+            <a th:href="@{/users/{id}(id=${owner.id})}"
+               th:text="${owner.name}">
+              Owner name
+            </a>
+          </p>
+
+          <p class="text-muted">
+            Rating:
+            <strong th:text="${owner.rating}">0</strong>
+          </p>
+
+          <a class="btn btn-outline-primary btn-block"
+             th:href="@{/users/{id}(id=${owner.id})}">
+            View profile
+          </a>
+
+          <a th:if="${currentUser != null
+                               and currentUser.id != owner.id}"
+             class="btn btn-primary btn-block mt-2"
+             th:href="@{/request/new(
+                           receiverId=${owner.id})}">
+            Send exchange request
+          </a>
+
+          <a th:if="${currentUser == null}"
+             class="btn btn-primary btn-block mt-2"
+             th:href="@{/login}">
+            Log in to send a request
+          </a>
+
+          <p th:if="${currentUser != null
+                               and currentUser.id == owner.id}"
+             class="text-muted mt-3 mb-0">
+            This is your advertisement.
+          </p>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

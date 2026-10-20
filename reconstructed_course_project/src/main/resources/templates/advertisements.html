@@ -32,15 +32,16 @@
 
             <div class="card h-100">
 
-                <div th:if="${ad.carId != null
-                             and coverPhotosByCarId[ad.carId] != null}">
+                <a th:href="@{/advertisements/{id}(id=${ad.id})}"
+                   th:if="${ad.carId != null
+           and coverPhotosByCarId[ad.carId] != null}">
 
                     <img class="card-img-top"
                          style="height:220px;object-fit:cover"
-                         th:src="@{/car-photos/{filename}
-                           (filename=${coverPhotosByCarId[ad.carId].storedFilename})}"
+                         th:src="@{/car-photos/{filename}(
+             filename=${coverPhotosByCarId[ad.carId].storedFilename})}"
                          alt="Car photo"/>
-                </div>
+                </a>
 
                 <div th:unless="${ad.carId != null
                                 and coverPhotosByCarId[ad.carId] != null}"
@@ -104,10 +105,11 @@
 
                     <p class="small text-muted mb-0">
                         Posted by
-                        <span th:text="${ownerNamesById[ad.ownerId] != null
-                            ? ownerNamesById[ad.ownerId] : 'Member'}">
+                        <a th:href="@{/users/{id}(id=${ad.ownerId})}"
+                           th:text="${ownerNamesById[ad.ownerId] != null
+           ? ownerNamesById[ad.ownerId] : 'Member'}">
                             Member
-                        </span>
+                        </a>
                     </p>
 
                     <p class="small text-muted">
@@ -119,13 +121,13 @@
                 </div>
 
                 <div class="card-footer bg-white">
-                    <a th:if="${session.currentUser != null
-                               and session.currentUser.id != ad.ownerId}"
-                       class="btn btn-primary btn-block"
-                       th:href="@{/request/new(receiverId=${ad.ownerId})}">
-                        Propose an exchange
+                    <a class="btn btn-outline-primary btn-block"
+                       th:href="@{/advertisements/{id}(id=${ad.id})}">
+                        View details
                     </a>
                 </div>
+
+
 
             </div>
         </div>

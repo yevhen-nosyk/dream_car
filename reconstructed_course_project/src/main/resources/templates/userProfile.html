@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/headers::head(title='User Profile')">
+</head>
+
+<body>
+<div class="container">
+
+  <div th:replace="fragments/nav::nav"></div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+
+      <h2 th:text="${profileUser.name}">User name</h2>
+
+      <p class="text-muted mb-0">
+        Rating:
+        <strong th:text="${profileUser.rating}">0</strong>
+      </p>
+
+    </div>
+  </div>
+
+  <h3>Active advertisements</h3>
+
+  <div th:if="${advertisements.isEmpty()}"
+       class="alert alert-info">
+    This user has no active advertisements.
+  </div>
+
+  <div class="row">
+
+    <div class="col-md-6 col-lg-4 mb-4"
+         th:each="ad : ${advertisements}">
+
+      <div class="card h-100">
+
+        <a th:if="${ad.carId != null
+                           and coverPhotosByCarId[ad.carId] != null}"
+           th:href="@{/advertisements/{id}(id=${ad.id})}">
+
+          <img class="card-img-top"
+               style="height:220px;object-fit:cover"
+               th:src="@{/car-photos/{filename}(
+                             filename=${coverPhotosByCarId[ad.carId].storedFilename})}"
+               alt="Car photo"/>
+        </a>
+
+        <div th:unless="${ad.carId != null
+                                 and coverPhotosByCarId[ad.carId] != null}"
+             class="bg-light d-flex align-items-center
+                            justify-content-center"
+             style="height:220px">
+          <span class="text-muted">No photo available</span>
+        </div>
+
+        <div class="card-body">
+
+          <h5 class="card-title"
+              th:if="${ad.carId != null
+                                and carsById[ad.carId] != null}">
+
+                        <span th:text="${carsById[ad.carId].brand}">
+                            Brand
+                        </span>
+
+            <span th:text="${carsById[ad.carId].model}">
+                            Model
+                        </span>
+          </h5>
+
+          <p class="text-muted small"
+             th:if="${ad.carId != null
+                               and carsById[ad.carId] != null}">
+
+                        <span th:text="${carsById[ad.carId].year}">
+                            2020
+                        </span>
+            ·
+            <span th:text="${#numbers.formatInteger(
+                            carsById[ad.carId].mileage, 0, 'COMMA')}">
+                            50,000
+                        </span>
+            km
+          </p>
+
+          <p th:text="${ad.description}">
+            Advertisement description
+          </p>
+
+        </div>
+
+        <div class="card-footer bg-white">
+          <a class="btn btn-outline-primary btn-block"
+             th:href="@{/advertisements/{id}(id=${ad.id})}">
+            View details
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <a class="btn btn-link mb-4"
+     th:href="@{/advertisements}">
+    Back to advertisements
+  </a>
+
+</div>
+</body>
+</html>
