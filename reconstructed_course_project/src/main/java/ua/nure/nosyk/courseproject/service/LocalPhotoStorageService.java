@@ -30,6 +30,7 @@ public class LocalPhotoStorageService {
     public LocalPhotoStorageService(@Value("${app.upload.dir:uploads}") String uploadDirectory) {
 
         this.root = Paths.get(uploadDirectory).toAbsolutePath().normalize();
+        System.out.println("PHOTO STORAGE ROOT: " + this.root);
     }
 
     public void validate(MultipartFile file) throws IOException {
