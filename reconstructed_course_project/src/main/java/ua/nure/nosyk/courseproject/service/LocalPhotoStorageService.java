@@ -31,6 +31,8 @@ public class LocalPhotoStorageService {
 
         this.root = Paths.get(uploadDirectory).toAbsolutePath().normalize();
         System.out.println("PHOTO STORAGE ROOT: " + this.root);
+        System.out.println("UPLOAD DIR EXISTS: " + Files.isDirectory(this.root));
+        System.out.println("TARGET PHOTO EXISTS: " + Files.isRegularFile(this.root.resolve("1cd48e91-c884-4df2-b7ae-f47db650373b.jpg")));
     }
 
     public void validate(MultipartFile file) throws IOException {
